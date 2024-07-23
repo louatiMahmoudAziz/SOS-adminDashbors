@@ -8,8 +8,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom"
 import { Provider, useDispatch, useSelector } from "react-redux";
 // reducer
 import { store } from "./store";
-import { setAuthState, logout } from "./store/authSlice";
-import { verifyUser } from "./services/user";
+import { setAuthState } from "./store/authSlice";
 
 const Google = React.lazy(() => import("./views/dashboard/maps/google"));
 const Default = React.lazy(() => import("./layouts/dashboard/default"));
@@ -22,21 +21,14 @@ const Dashboard = React.lazy(() => import("./views/dashboard/dashboard"));
 
 const PrivateRoute = ({ element }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        const result = await verifyUser();
-        if (result && result.isValid) {
-          dispatch(setAuthState({ isAuthenticated: true, token }));
-        } else {
-          dispatch(logout());
-        }
-      }
-    };
-    checkAuth();
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      dispatch(setAuthState({ isAuthenticated: true, token: storedToken }));
+    }
   }, [dispatch]);
 
   if (isAuthenticated === null) {

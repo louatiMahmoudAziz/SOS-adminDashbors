@@ -74,7 +74,7 @@ export const verifyUser = async () => {
       }
     );
   
-    return response;
+    return response.data;
   } catch (error) {
     
     console.error('Error verifying user:', error);

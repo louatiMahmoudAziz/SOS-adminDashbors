@@ -25,44 +25,51 @@ import { verifyUser } from '../../../../services/user';
 
 const Header = memo((props) => {
     const navigate = useNavigate();
-    const [cookies, removeCookie] = useCookies([]);
-    const navbarHide = useSelector(SettingSelector.navbar_show); // array
-    const headerNavbar = useSelector(SettingSelector.header_navbar)
-    const [username, setUsername] = useState("");
+    const navbarHide = useSelector(SettingSelector.navbar_show);
+    const headerNavbar = useSelector(SettingSelector.header_navbar);
+    const [username, setUsername] = useState('');
+  
     useEffect(() => {
-        // navbarstylemode
-        if (headerNavbar === 'navs-sticky' || headerNavbar === 'nav-glass') {
-            window.onscroll = () => {
-                if (document.documentElement.scrollTop > 50) {
-                    document.getElementsByTagName('nav')[0].classList.add('menu-sticky')
-                } else {
-                    document.getElementsByTagName('nav')[0].classList.remove('menu-sticky')
-                }
-            }
-        }
-    })
-    useEffect(() => {
-        const verifyCookie = async () => {
-            if (!cookies.token) {
-                navigate("/auth/sign-in");
-            }
-            const { data } = await verifyUser()
-            const { status, user } = data;
-            setUsername(user);
-            if (!status) {
-                logout()
-            }
+      if (headerNavbar === 'navs-sticky' || headerNavbar === 'nav-glass') {
+        window.onscroll = () => {
+          if (document.documentElement.scrollTop > 50) {
+            document.getElementsByTagName('nav')[0].classList.add('menu-sticky');
+          } else {
+            document.getElementsByTagName('nav')[0].classList.remove('menu-sticky');
+          }
         };
-        verifyCookie()
-        // eslint-disable-next-line
-    }, []);
+      }
+    }, [headerNavbar]);
+  
+    useEffect(() => {
+      const verifyCookie = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/auth/sign-in');
+          return;
+        }
+        try {
+          const { status, user } = await verifyUser();
+          setUsername(user);
+          if (!status) {
+            logout();
+          }
+        } catch (error) {
+          logout();
+        }
+      };
+      verifyCookie();
+    }, [navigate]);
+  
     const minisidebar = () => {
-        document.getElementsByTagName('ASIDE')[0].classList.toggle('sidebar-mini')
-    }
-    const logout = () => {
-        removeCookie("token");
-        navigate("/auth/sign-in");
+      document.getElementsByTagName('ASIDE')[0].classList.toggle('sidebar-mini');
     };
+  
+    const logout = () => {
+      localStorage.removeItem('token');
+      navigate('/auth/sign-in');
+    };
+  
     return (
         <Fragment>
             <Navbar expand="lg" variant="light" className={`nav iq-navbar ${headerNavbar} ${navbarHide.join(" ")}`}>
