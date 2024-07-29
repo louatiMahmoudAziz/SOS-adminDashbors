@@ -1,22 +1,28 @@
 const Urgence = require('../../models/urgence/urgence');
 const { Socket } = require('../../utils/socketjs');
-const pointInPolygon = require('point-in-polygon')
+const pointInPolygon = require('point-in-polygon');
 const turf = require('@turf/turf');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const { bizerteTunisCoordinates,
+const { 
+    bizerteTunisCoordinates,
     tunisMonastirCoordinates,
     monastirGabesCoordinates,
     gabesZerzisCoordinates,
     tabarkaBizerteCoordinates,
-    tabarkacapbonCoordinates } = require('../../utils/polygonData') // coords of areas
+    tabarkacapbonCoordinates 
+} = require('../../utils/polygonData');
+
+// controller/urgence/urgence.js
 
 exports.create = async (req, res) => {
-    let response = null
-    if (req.body.id != null) {
+    console.log("Received create request:", req.body);
+    let response = null;
+    if (req.body.id) {
         const id = req.body.id.replace(/^"|"$/g, '');
-        response = await Urgence.findById(id)
+        response = await Urgence.findById(id);
     }
+
     if (!response) {
         const newUrgence = new Urgence({
             longitude: req.body.longitude,
@@ -38,19 +44,16 @@ exports.create = async (req, res) => {
         });
         newUrgence.save()
             .then((urgence) => {
-                Socket.emit('notification', {
-                    urgence
-                });
-                res.send(urgence._id)
-
+                Socket.emit('notification', { urgence });
+                res.send(urgence._id);
             })
             .catch(err => {
+                console.error("Error creating emergency:", err);
                 res.status(500).send({
                     message: err.message || "Some error occurred."
                 });
             });
-    }
-    else { // if we retrieve the emergencie we simply update it
+    } else { 
         Urgence.findByIdAndUpdate(response._id, req.body, { useFindAndModify: false })
             .then(data => {
                 if (!data) {
@@ -63,12 +66,61 @@ exports.create = async (req, res) => {
                 }
             })
             .catch(err => {
+                console.error("Error updating emergency:", err);
                 res.status(500).send({
                     message: "Error updating emergency with id=" + response._id + " " + err
                 });
             });
     }
-}
+};
+
+// Add new update function
+exports.update = (req, res) => {
+    let id = req.params.id;
+    console.log("Received update request for id:", id);
+    console.log("Request body:", req.body);
+    id = id.replace(/^"|"$/g, '');
+    id = id.replace(/^\"|\"$/g, '');
+
+    // Decode URI component to get the actual ID
+    id = decodeURIComponent(id);
+
+    // Ensure the ID is a valid ObjectId string and remove surrounding quotes if present
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).send({
+            message: `Invalid ID format: ${id}`
+        });
+    }
+
+   
+
+    if (id.startsWith('"') && id.endsWith('"')) {
+        id = id.substring(1, id.length - 1);
+    }
+
+    Urgence.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+        .then(data => {
+            if (!data) {
+                res.status(404).send({
+                    message: `Cannot update emergency with id=${id}. Maybe it was not found!`
+                });
+            } else {
+                Socket.emit('refresh', { data: data });
+                res.send({ message: "Emergency was updated successfully." });
+            }
+        })
+        .catch(err => {
+            console.error("Error updating emergency:", err);
+            res.status(500).send({
+                message: "Error updating emergency with id=" + id + " " + err
+            });
+        });
+};
+
+// Other functions (findAll, findUrgence, delete, deleteAll, findNbrMonthly, findNbrDaily, findByRegion, isInRegion)
+// with added logging where necessary
+
+
 // retrive all emergencies with filters
 exports.findAll = async (req, res) => {
     const { depart, niveau, status, cloture } = req.query
@@ -287,7 +339,3 @@ function calculateEnclosed(data) {
     }
     return { counterEnclosed: counterEnclosed, counterNotEnclosed: counterNotEnclosed }
 }
-
-
-
-

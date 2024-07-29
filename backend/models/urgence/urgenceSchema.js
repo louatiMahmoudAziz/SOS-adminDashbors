@@ -1,6 +1,7 @@
-const Mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
-const urgenceSchema = new Mongoose.Schema({
+// Define the schema
+const urgenceSchema = new mongoose.Schema({
     longitude: Number,
     latitude: Number,
     type: String,
@@ -19,4 +20,39 @@ const urgenceSchema = new Mongoose.Schema({
     other: String
 }, { timestamps: true });
 
-module.exports = urgenceSchema;
+// Instance method to save the document
+urgenceSchema.methods.saveUrgence = function (callback) {
+    return this.save(callback);
+};
+
+// Static method to find by ID and update
+urgenceSchema.statics.findByIdAndUpdateUrgence = function (id, updateData, callback) {
+    return this.findByIdAndUpdate(id, updateData, { useFindAndModify: false }, callback);
+};
+
+// Static method to find by ID
+urgenceSchema.statics.findByIdUrgence = function (id, callback) {
+    return this.findById(id, callback);
+};
+
+// Static method to find one document by criteria
+urgenceSchema.statics.findOneUrgence = function (criteria, callback) {
+    return this.findOne(criteria, callback);
+};
+
+// Static method to find documents by criteria
+urgenceSchema.statics.findUrgences = function (criteria, callback) {
+    return this.find(criteria, callback);
+};
+
+// Static method to find by ID and remove
+urgenceSchema.statics.findByIdAndRemoveUrgence = function (id, callback) {
+    return this.findByIdAndRemove(id, callback);
+};
+
+// Static method to delete many documents by criteria
+urgenceSchema.statics.deleteManyUrgences = function (criteria, callback) {
+    return this.deleteMany(criteria, callback);
+};
+
+module.exports = mongoose.model('Urgence', urgenceSchema);
