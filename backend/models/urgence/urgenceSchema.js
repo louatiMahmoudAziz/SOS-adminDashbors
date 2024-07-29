@@ -55,4 +55,4 @@ urgenceSchema.statics.deleteManyUrgences = function (criteria, callback) {
     return this.deleteMany(criteria, callback);
 };
 
-module.exports = mongoose.model('Urgence', urgenceSchema);
+module.exports = mongoose.models.Urgence || mongoose.model('Urgence', urgenceSchema);
