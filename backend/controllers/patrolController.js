@@ -70,13 +70,15 @@ exports.updatePatrol = async (req, res) => {
 
 exports.deletePatrol = async (req, res) => {
     try {
+        console.log('Received request to delete patrol with ID:', req.params.id);  // Log the request
         const patrol = await Patrol.findByIdAndDelete(req.params.id);
         if (!patrol) {
             return res.status(404).send({ message: 'Patrol not found' });
         }
         res.status(200).send({ message: 'Patrol deleted' });
     } catch (error) {
-        res.status(400).send(error);
+        console.error('Error deleting patrol:', error); // Log the detailed error
+        res.status(500).send({ message: error.message });
     }
 };
 

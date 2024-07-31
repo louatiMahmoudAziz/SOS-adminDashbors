@@ -13,10 +13,10 @@ router.get('/', patrolController.getAllPatrols);
 router.get('/:id', patrolController.getPatrolById);
 
 // Update patrol details
-router.put('/:id', patrolController.updatePatrol);
+router.put('/update/:id', patrolController.updatePatrol);
 
 // Delete a patrol
-router.delete('/:id', patrolController.deletePatrol);
+router.delete('/delete/:id', patrolController.deletePatrol);
 
 // Get patrols by supervisor
 router.get('/supervisor/patrols', verifySupervisor, patrolController.getPatrolsBySupervisor);

@@ -13,6 +13,7 @@ import { setAuthState } from "./store/authSlice";
 const Google = React.lazy(() => import("./views/dashboard/maps/google"));
 const Default = React.lazy(() => import("./layouts/dashboard/default"));
 const UserList = React.lazy(() => import("./views/dashboard/app/user-list"));
+const PatrolList = React.lazy(() => import("./views/dashboard/app/patrol-list"));
 const Recoverpw = React.lazy(() => import("./views/dashboard/auth/recoverpw"));
 const Resetpwd = React.lazy(() => import("./views/dashboard/auth/resetpwd"));
 const Error404 = React.lazy(() => import("./views/dashboard/errors/error404"));
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
       {
         path: 'user-list',
         element: <UserList />
+      },
+      {
+        path: 'patrol-list',
+        element: <PatrolList />
       },
       {
         path: 'dashboard',
