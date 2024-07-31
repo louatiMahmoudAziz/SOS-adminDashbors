@@ -28,7 +28,7 @@ exports.Login = async (req, res) => {
     }
 
     // Check for patrol supervisor or admin role
-    if (user.role !== 'patrol_supervisor' && user.role !== 'admin') {
+    if (user.role !== 'patrol_supervisor' && user.role !== 'ADMIN') {
       console.log('Access forbidden for user:', email);
       return res.status(403).send({ message: 'Access forbidden: Only supervisors and admins can log in here' });
     }
