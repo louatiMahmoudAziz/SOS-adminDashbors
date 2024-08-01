@@ -3,7 +3,7 @@ const { Server } = require("socket.io");
 // New Web Socket server
 const io = new Server({
     cors: {
-        origin: ["http://localhost:3000", "http://localhost:52225"], // Updated to allow multiple origins
+        origin: ["http://localhost:3000", "http://localhost:51366"], // Updated to allow multiple origins
         methods: ["GET", "POST"]
     }
 });

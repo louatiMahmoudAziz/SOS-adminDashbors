@@ -17,7 +17,7 @@ const patrolRouter = require('./routes/patrolRoutes');  // Add this line
 
 var app = express();
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:63236'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:51366'];
 
 app.use(cors({
   origin: function (origin, callback) {
