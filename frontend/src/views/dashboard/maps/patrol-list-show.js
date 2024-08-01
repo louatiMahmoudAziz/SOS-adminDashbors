@@ -70,7 +70,8 @@ const PatrolListShow = () => {
                                                 <Link 
                                                    onClick={() => {
                                                       setSelectedPatrol(item);
-                                                      handleShowPatrolListModal();
+                                                      //handleShowPatrolListModal();
+                                                      handleShowAssignModal (); 
                                                    }}
                                                    className="btn btn-sm btn-icon btn-primary" 
                                                    data-toggle="tooltip" 
