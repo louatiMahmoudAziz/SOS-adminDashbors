@@ -10,6 +10,7 @@ import globalConfig from '../../../services/config';
 import axios from 'axios';
 import './map-style.css';
 import PatrolListShow from './patrol-list-show';
+import { success, errorAlert } from '../../../services/alerts';
 import 'lazysizes';
 
 const LocationMarkers = ({ refresh, markers, setMarkers }) => {
@@ -123,6 +124,8 @@ const Google = () => {
     const [enclosed, setEnclosed] = useState('All');
     const [markers, setMarkers] = useState([]);
     
+
+    
     const departOptions = ['All', 'la Goulette', 'Radès', 'Sousse', 'Gabès', 'Zarzis', 'Sfax'];
     const statusOptions = ['All', 'Unconscious', 'Critical condition', 'Injured', 'Difficulty breathing', 'Severe bleeding', 'Choking', 'Cardiac arrest', 'Allergic reaction', 'Overdose'];
     const niveauOptions = ['All', 1, 2, 3, 4, 5];
@@ -144,6 +147,37 @@ const Google = () => {
     useEffect(() => {
         refresh();
     }, [selectedDepart, selectedStatus, enclosed, selectedNiveau]);
+
+    // Google.js
+    
+      
+    const handlePatrolAssignment = async (patrolId) => {
+        if (!selectedItem) {
+            errorAlert('No mission selected');  // Alert if no mission is selected
+            return;  
+        }
+        try {
+            const response = await axios.post(
+                `${globalConfig.BACKEND_URL}/api/patrols/assign/${patrolId}/${selectedItem._id}`
+            );
+            if (response.status === 200) {
+                success('Mission assigned successfully!');
+                setShowPatrolList(false);
+                refresh();  // Refresh the data to show updated assignments
+            } else {
+                errorAlert('Failed to assign mission');  // General fallback error message
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 409) {
+                errorAlert('This mission has already been assigned to this patrol.');  // Specific error message for duplicate assignment
+            } else {
+                errorAlert('Failed to assign mission');  // General error message for other errors
+            }
+            console.error('Error in assigning mission:', error);
+        }
+    };
+    
+
 
     const assignToPatrol = (item) => {
         setSelectedItem(item);
@@ -294,7 +328,7 @@ const Google = () => {
                     <Modal.Title>Assign Patrol</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <PatrolListShow selectedItem={selectedItem} setShowPatrolList={setShowPatrolList} />
+                    <PatrolListShow selectedItem={selectedItem} setShowPatrolList={setShowPatrolList} onAssignMission={handlePatrolAssignment} />
                 </Modal.Body>
             </Modal>
         </div>

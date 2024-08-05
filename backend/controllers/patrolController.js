@@ -90,3 +90,32 @@ exports.getPatrolsBySupervisor = async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 };
+
+// patrolController.js
+
+exports.assignUrgencyToPatrol = async (req, res) => {
+    const { patrolId, urgencyId } = req.params;
+    try {
+        const patrol = await Patrol.findById(patrolId).populate('assignedMissions');
+        const urgency = await Urgence.findById(urgencyId);
+
+        if (!patrol || !urgency) {
+            return res.status(404).send({ message: 'Patrol or Urgency not found' });
+        }
+
+        // Check if the urgency is already assigned to this patrol
+        if (patrol.assignedMissions.some(mission => mission._id.toString() === urgencyId)) {
+            return res.status(409).send({ message: 'This urgency has already been assigned to this patrol' });
+        }
+
+        // Add the urgency to the patrol's assignedMissions if not already assigned
+        patrol.assignedMissions.push(urgencyId);
+        await patrol.save();
+
+        res.status(200).send({ message: 'Urgency assigned to patrol successfully', patrol });
+    } catch (error) {
+        console.error('Error assigning urgency to patrol:', error);
+        res.status(500).send({ message: error.message });
+    }
+};
+
