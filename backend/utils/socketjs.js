@@ -4,6 +4,7 @@ const { Server } = require("socket.io");
 const io = new Server({
     cors: {
         origin: ["http://localhost:3000", "http://localhost:54060"], // Updated to allow multiple origins
+
         methods: ["GET", "POST"]
     }
 });

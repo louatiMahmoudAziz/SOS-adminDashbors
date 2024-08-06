@@ -17,7 +17,6 @@ const patrolRouter = require('./routes/patrolRoutes');  // Add this line
 const boatRouter = require('./routes/boatRoutes'); 
 
 var app = express();
-
 const allowedOrigins = ['http://localhost:3000', 'http://localhost:54060'];
 
 app.use(cors({
