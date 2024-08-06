@@ -14,10 +14,11 @@ const urgenceRouter = require('./routes/urgence/urgence');
 const authRouter = require('./routes/authentificationRoutes');
 const resetPassword = require('./routes/resetPasswordRoute');
 const patrolRouter = require('./routes/patrolRoutes');  // Add this line
+const boatRouter = require('./routes/boatRoutes'); 
 
 var app = express();
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:63422'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:54060'];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -44,13 +45,12 @@ app.use('/api/users', usersRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/resetpwd', resetPassword);
 app.use('/api/patrols', patrolRouter);  // Add this line
-
+app.use('/api/boats', boatRouter);  // Add this line
 app.use('/uploads', express.static('uploads'));
 
 // Connect to MongoDB
 mongoose.set('strictQuery', true);
-mongoose
-  .connect(process.env.MONGODB_URI, {
+mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

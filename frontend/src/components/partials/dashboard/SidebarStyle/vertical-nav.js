@@ -65,6 +65,19 @@ const VerticalNav = memo(() => {
                         <span className="item-name">Patrols</span>
                     </Link>
                 </li>
+                <li className={`${location.pathname === '/boat-list' ? 'active' : ''} nav-item`}>
+                    <Link className={`${location.pathname === '/boat-list' ? 'active' : ''} nav-link`} aria-current="page" to="/boat-list">
+                        <i className="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-anchor">
+  <circle cx="12" cy="5" r="3"></circle>
+  <line x1="12" y1="22" x2="12" y2="8"></line>
+  <path d="M5 12H2c0 5 3.6 9 8 9s8-4 8-9h-3"></path>
+</svg>
+
+                        </i>
+                        <span className="item-name">Boats</span>
+                    </Link>
+                </li>
             </Accordion>
         </Fragment>
     )
