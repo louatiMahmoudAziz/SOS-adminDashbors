@@ -20,14 +20,25 @@ const LocationMarkers = ({ refresh, markers, setMarkers }) => {
 
     const handleClose = () => setShow(false);
     const handleShow = async (latlng) => {
-        await refreshData(latlng);
-        setShow(true);
+        if (typeof latlng.lat === 'number' && typeof latlng.lng === 'number') {
+            await refreshData(latlng);
+            setShow(true);
+        } else {
+            console.error('Invalid latlng:', latlng);
+        }
     };
+    
 
     const refreshData = async (latlng) => {
-        const response = await axios.get(`${globalConfig.BACKEND_URL}/api/urgences/find-urgence/${latlng.lat}/${latlng.lng}`);
-        setUrgence(response.data);
+        try {
+            const response = await axios.get(`${globalConfig.BACKEND_URL}/api/urgences/find-urgence/${latlng.lat}/${latlng.lng}`);
+            setUrgence(response.data);
+        } catch (error) {
+            console.error('Failed to fetch urgence data:', error);
+            // Optionally set urgence to a safe default state or handle the error visually
+        }
     };
+    
 
     useEffect(() => {
         const socket = io.connect(globalConfig.BACKEND_URL);
@@ -44,11 +55,14 @@ const LocationMarkers = ({ refresh, markers, setMarkers }) => {
         });
 
         return () => socket.disconnect();
-    }, [refresh, setMarkers, map]);
+    }, [refresh, setMarkers, map, refreshData]);
 
     let DefaultIcon = L.icon({
         iconUrl: icon,
+        iconSize: [25, 41], // Size of the icon
+        iconAnchor: [12, 41], // Point of the icon which will correspond to marker's location
     });
+    
     L.Marker.prototype.options.icon = DefaultIcon;
 
     return (
@@ -108,8 +122,9 @@ const LocationMarkers = ({ refresh, markers, setMarkers }) => {
                 </Modal.Footer>
             </Modal>
             {markers.map((marker, key) => (
-                <Marker key={key} position={marker} eventHandlers={{ click: (e) => handleShow(e.latlng) }} />
-            ))}
+    <Marker key={key} position={[marker[0], marker[1]]} eventHandlers={{ click: (e) => handleShow(e.latlng) }} />
+    ))}
+
         </>
     );
 };
@@ -136,13 +151,17 @@ const Google = () => {
         if (selectedDepart && selectedDepart !== "All") params.set('depart', selectedDepart);
         if (selectedStatus && selectedStatus !== "All") params.set('status', selectedStatus);
         if (selectedNiveau && selectedNiveau !== "All") params.set('niveau', selectedNiveau);
-
+    
         axios.get(`${globalConfig.BACKEND_URL}/api/urgences/find-all?${params.toString()}`)
             .then((response) => {
+                console.log('Marker data:', response.data);  // Log the marker data for debugging
                 setUrgences(response.data);
-                setMarkers(response.data.map(item => [item.longitude, item.latitude]));
+                setMarkers(response.data.map(item => [item.latitude, item.longitude]));  // Ensure correct coordinate order
+            }).catch(error => {
+                console.error('Error fetching urgences:', error);  // Log any errors during the fetch
             });
     };
+    
 
     useEffect(() => {
         refresh();
