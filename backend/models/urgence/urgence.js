@@ -17,7 +17,8 @@ const urgenceSchema = new mongoose.Schema({
     communication: String,
     police: String,
     cloture: String,
-    other: String
+    other: String,
+    image: String  // Add this line to store base64-encoded image strings
 }, { timestamps: true });
 
 // Register the model

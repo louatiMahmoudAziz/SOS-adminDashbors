@@ -40,7 +40,8 @@ exports.create = async (req, res) => {
             communication: req.body.communication,
             police: req.body.police,
             cloture: 'false',
-            other: req.body.other
+            other: req.body.other,
+            image: req.body.image  // Add image field here
         });
         newUrgence.save()
             .then((urgence) => {
@@ -92,8 +93,6 @@ exports.update = (req, res) => {
         });
     }
 
-   
-
     if (id.startsWith('"') && id.endsWith('"')) {
         id = id.substring(1, id.length - 1);
     }
@@ -120,7 +119,6 @@ exports.update = (req, res) => {
 // Other functions (findAll, findUrgence, delete, deleteAll, findNbrMonthly, findNbrDaily, findByRegion, isInRegion)
 // with added logging where necessary
 
-
 // retrive all emergencies with filters
 exports.findAll = async (req, res) => {
     const { depart, niveau, status, cloture } = req.query
@@ -136,6 +134,7 @@ exports.findAll = async (req, res) => {
         res.status(500).send({ message: err.message })
     }
 }
+
 // retrieve emergency by coords
 exports.findUrgence = (req, res) => {
     const latitude = req.params.latitude;
@@ -186,13 +185,14 @@ exports.deleteAll = (req, res) => {
             });
         });
 };
-// Retreive emergencies monthly
+
+// Retrieve emergencies monthly
 exports.findNbrMonthly = async (req, res) => {
-    const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] //Months
+    const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] // Months
     let data = []
     let enclosed = []
     let notEnclosed = []
-    for (let index = 0; index < months.length; index++) { // retriving every emergencies per month
+    for (let index = 0; index < months.length; index++) { // retrieving every emergencies per month
         const response = await Urgence.find({
             $expr: {
                 $eq: [
@@ -200,7 +200,7 @@ exports.findNbrMonthly = async (req, res) => {
                 ]
             }
         })
-        const counters = calculateEnclosed(response) // calculating how many is enclosed and not enclosed
+        const counters = calculateEnclosed(response) // calculating how many are enclosed and not enclosed
         notEnclosed.push(counters.counterNotEnclosed)
         enclosed.push(counters.counterEnclosed);
         data.push(response.length)

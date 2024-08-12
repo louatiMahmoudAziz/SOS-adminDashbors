@@ -9,6 +9,12 @@ const PatrolListShow = ({ selectedItem, onAssignMission, setShowPatrolList }) =>
    const [selectedPatrol, setSelectedPatrol] = useState(null);
    const [patrollist, setPatrollist] = useState([]);
 
+   const statusStyles = {
+      standby: { backgroundColor: 'green', width: '10px', height: '10px', borderRadius: '50%', display: 'inline-block' },
+      on_mission: { backgroundColor: 'blue', width: '10px', height: '10px', borderRadius: '50%', display: 'inline-block' },
+      off_duty: { backgroundColor: 'red', width: '10px', height: '10px', borderRadius: '50%', display: 'inline-block' }
+   };
+
    const handleCloseAssignModal = () => setShowAssignModal(false);
    const handleShowAssignModal = () => setShowAssignModal(true);
 
@@ -60,7 +66,10 @@ const PatrolListShow = ({ selectedItem, onAssignMission, setShowPatrolList }) =>
                                        <tr key={idx}>
                                           <td>{item.supervisor.name}</td>
                                           <td>{item.supervisor.email}</td>
-                                          <td>{item.status}</td>
+                                          <td>
+                                             <div style={statusStyles[item.status]}></div>
+                                             {item.status}
+                                          </td>
                                           <td>{item.location}</td>
                                           <td>{item.teamMembers.join(', ')}</td>
                                           <td>

@@ -10,6 +10,7 @@ import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "./store";
 import { setAuthState } from "./store/authSlice";
 
+// Import your components
 const Google = React.lazy(() => import("./views/dashboard/maps/google"));
 const Default = React.lazy(() => import("./layouts/dashboard/default"));
 const UserList = React.lazy(() => import("./views/dashboard/app/user-list"));
@@ -20,6 +21,7 @@ const Resetpwd = React.lazy(() => import("./views/dashboard/auth/resetpwd"));
 const Error404 = React.lazy(() => import("./views/dashboard/errors/error404"));
 const SignIn = React.lazy(() => import("./views/dashboard/auth/sign-in"));
 const Dashboard = React.lazy(() => import("./views/dashboard/dashboard"));
+const EnclosedMissionsHistory = React.lazy(() => import("./views/dashboard/app/enclosed-missions-history")); // Enclosed Missions History
 
 const PrivateRoute = ({ element }) => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -34,7 +36,7 @@ const PrivateRoute = ({ element }) => {
   }, [dispatch]);
 
   if (isAuthenticated === null) {
-    return <div>Loading...</div>; // Show loading while state is being set
+    return <div>Loading...</div>;
   }
 
   return isAuthenticated ? element : <Navigate to="/auth/sign-in" />;
@@ -67,7 +69,11 @@ const router = createBrowserRouter([
       },
       {
         path: 'dashboard',
-        element: <PrivateRoute element={<Dashboard />} /> // Protecting dashboard route
+        element: <PrivateRoute element={<Dashboard />} />
+      },
+      {
+        path: 'enclosed-missions-history',
+        element: <PrivateRoute element={<EnclosedMissionsHistory />} /> // Enclosed Missions History page
       }
     ]
   },
@@ -97,7 +103,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals.console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
