@@ -17,17 +17,11 @@ const patrolRouter = require('./routes/patrolRoutes');  // Add this line
 const boatRouter = require('./routes/boatRoutes'); 
 
 var app = express();
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:54287',"http://localhost:55218"];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:54287',"http://localhost:55218","http://10.0.2.2"];
 
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
+  origin: true, // This allows all origins
+  credentials: true // Allow credentials if needed
 }));
 app.enable('trust proxy');
 

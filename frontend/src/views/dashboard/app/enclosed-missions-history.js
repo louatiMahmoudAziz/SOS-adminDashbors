@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Row, Col, Table, Button, Modal, Card } from 'react-bootstrap';
 import axios from 'axios';
 import globalConfig from '../../../services/config';
+import moment from 'moment'; // Add this line if you want to format the date
 
 const EnclosedMissionsHistory = () => {
   const [missions, setMissions] = useState([]);
@@ -48,6 +49,8 @@ const EnclosedMissionsHistory = () => {
                     <th>Level</th>
                     <th>Status</th>
                     <th>Enclosed by</th>
+                    <th>Creation Time</th>
+                    <th>Enclosure Time</th>
                     <th>Details</th>
                   </tr>
                 </thead>
@@ -59,6 +62,8 @@ const EnclosedMissionsHistory = () => {
                       <td>{mission.niveau}</td>
                       <td>{mission.status}</td>
                       <td>{mission.police}</td>
+                      <td>{moment(mission.createdAt).format('YYYY-MM-DD HH:mm:ss')}</td>
+                      <td>{moment(mission.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</td>
                       <td>
                         <Button variant="info" onClick={() => handleShowDetails(mission)}>
                           Details
@@ -84,12 +89,13 @@ const EnclosedMissionsHistory = () => {
             <p><strong>Type:</strong> {selectedMission.type}</p>
             <p><strong>Level:</strong> {selectedMission.niveau}</p>
             <p><strong>Status:</strong> {selectedMission.status}</p>
-            <p><strong>Patrol Enclosed:</strong> {selectedMission.enclosedBy ? `${selectedMission.enclosedBy.supervisor.rank} ${selectedMission.enclosedBy.supervisor.name}` : 'N/A'}</p>
             <p><strong>Number of People:</strong> {selectedMission.nbrpersonne}</p>
             <p><strong>Starting Point:</strong> {selectedMission.depart}</p>
             <p><strong>Communication:</strong> {selectedMission.communication}</p>
             <p><strong>Police:</strong> {selectedMission.police}</p>
             <p><strong>Other Info:</strong> {selectedMission.other}</p>
+            <p><strong>Creation Time:</strong> {moment(selectedMission.createdAt).format('YYYY-MM-DD HH:mm:ss')}</p>
+            <p><strong>Enclosure Time:</strong> {moment(selectedMission.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</p>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseDetails}>
