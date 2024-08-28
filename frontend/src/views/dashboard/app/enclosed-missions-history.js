@@ -49,7 +49,7 @@ const EnclosedMissionsHistory = () => {
                     <th>Level</th>
                     <th>Status</th>
                     <th>Enclosed by</th>
-                    <th>Creation Time</th>
+                    <th>Signal Time</th>
                     <th>Enclosure Time</th>
                     <th>Details</th>
                   </tr>
@@ -93,7 +93,7 @@ const EnclosedMissionsHistory = () => {
             <p><strong>Starting Point:</strong> {selectedMission.depart}</p>
             <p><strong>Communication:</strong> {selectedMission.communication}</p>
             <p><strong>Police:</strong> {selectedMission.police}</p>
-            <p><strong>Other Info:</strong> {selectedMission.other}</p>
+            <p><strong>Report:</strong> {selectedMission.other}</p>
             <p><strong>Creation Time:</strong> {moment(selectedMission.createdAt).format('YYYY-MM-DD HH:mm:ss')}</p>
             <p><strong>Enclosure Time:</strong> {moment(selectedMission.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</p>
           </Modal.Body>

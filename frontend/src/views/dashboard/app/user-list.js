@@ -38,7 +38,7 @@ const UserList = () => {
                   <Card>
                      <Card.Header className="d-flex justify-content-between">
                         <div className="header-title">
-                           <h4 className="card-title">User List</h4>
+                           <h4 className="card-title">Operations center members</h4>
                         </div>
                         <div>
                            <Button className="text-center btn-primary btn-icon me-2 mt-lg-0 mt-md-0 mt-3" onClick={() => {

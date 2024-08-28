@@ -40,7 +40,7 @@ const VerticalNav = memo(() => {
                                 <path d="M16 12c2.21 0 4 1.79 4 4v1h-8v-1c0-2.21 1.79-4 4-4zm-8 0c2.21 0 4 1.79 4 4v1H4v-1c0-2.21 1.79-4 4-4zm0-6a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm8 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6z" fill="currentColor"></path>
                             </svg>
                         </i>
-                        <span className="item-name">Users</span>
+                        <span className="item-name">Operations center</span>
                     </Link>
                 </li>
                 <li className={`${location.pathname === '/patrol-list' ? 'active' : ''} nav-item`}>

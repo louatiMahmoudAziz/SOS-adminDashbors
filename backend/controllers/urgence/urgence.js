@@ -13,7 +13,91 @@ const {
     tabarkacapbonCoordinates 
 } = require('../../utils/polygonData');
 
+exports.getResponseTimes = async (req, res) => {
+    try {
+        const responseTimes = await Urgence.aggregate([
+            {
+                $project: {
+                    responseTime: { $subtract: ["$responseAt", "$createdAt"] } // Assuming you have responseAt and createdAt fields
+                }
+            }
+        ]);
+        res.status(200).json(responseTimes);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Add this to your controller/urgence/urgence.js
+
+exports.findByType = async (req, res) => {
+    const { type } = req.query; // Get the type from the query parameters
+
+    try {
+        if (!type) {
+            return res.status(400).send({ message: "Type query parameter is required." });
+        }
+
+        const urgences = await Urgence.find({ type: new RegExp(type, 'i') }); // Find emergencies by type, case-insensitive
+        res.status(200).json(urgences);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+exports.getHeatmapData = async (req, res) => {
+    try {
+        const incidents = await Urgence.find({}, { latitude: 1, longitude: 1 });
+        
+        // Calculate intensity based on frequency (example)
+        const intensityMap = {};
+        incidents.forEach(incident => {
+            const key = `${incident.latitude},${incident.longitude}`;
+            intensityMap[key] = intensityMap[key] ? intensityMap[key] + 1 : 1;
+        });
+
+        const heatmapData = Object.keys(intensityMap).map(key => {
+            const [lat, lng] = key.split(',').map(parseFloat);
+            return {
+                lat,
+                lng,
+                intensity: intensityMap[key]
+            };
+        });
+
+        res.status(200).json(heatmapData);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.getIncidentTrends = async (req, res) => {
+    try {
+        const trends = await Urgence.aggregate([
+            {
+                $group: {
+                    _id: {
+                        month: { $month: "$createdAt" },
+                        year: { $year: "$createdAt" },
+                        type: "$type" // assuming you have a type field
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { "_id.year": 1, "_id.month": 1 }
+            }
+        ]);
+        res.status(200).json(trends);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
 // controller/urgence/urgence.js
+
 
 exports.create = async (req, res) => {
     console.log("Received create request:", req.body);
@@ -269,27 +353,36 @@ exports.findByRegion = async (req, res) => {
 
     for (let index = 0; index < response.length; index++) {
         const element = response[index];
-        const point = turf.point([element.longitude, element.latitude]);
+        const point = turf.point([element.latitude,element.longitude]);
         if (turf.booleanPointInPolygon(point, polygontabarka)) {
             tabarka += 1
             region = 'Tabarka - Cap con'
-            break
+            console.log(`Urgence in Tabarka: Latitude ${point.geometry.coordinates[1]}, Longitude ${point.geometry.coordinates[0]}`);
+
+            
         }
         if (turf.booleanPointInPolygon(point, polygoncapbon)) {
             capBon += 1
             region = 'Cap bon - Monastir'
-            break
+            console.log(`Urgence in CapBon: Latitude ${point.geometry.coordinates[1]}, Longitude ${point.geometry.coordinates[0]}`);
+
+            
         }
         if (turf.booleanPointInPolygon(point, polygonmonastir)) {
             monastir += 1
             region = 'Monastir - Gabes'
-            break
+            console.log(`Urgence in Monastir: Latitude ${point.geometry.coordinates[1]}, Longitude ${point.geometry.coordinates[0]}`);
+
+            
         }
         if (turf.booleanPointInPolygon(point, polygongabes)) {
             gabes++
             region = 'Gabes - zarzis'
-            break
+            console.log(`Urgence in Gabes: Latitude ${point.geometry.coordinates[1]}, Longitude ${point.geometry.coordinates[0]}`);
+
+            
         }
+        console.log(index);
     }
     res.send({
         data: {
@@ -302,7 +395,7 @@ exports.findByRegion = async (req, res) => {
 }
 
 exports.isInRegion = async (req, res) => {
-    const point = turf.point([req.body.longitude, req.body.latitude]);
+    const point = turf.point([req.body.latitude,req.body.longitude]);
     const polygons = [
         turf.polygon(tabarkacapbonCoordinates),
         turf.polygon(tunisMonastirCoordinates),

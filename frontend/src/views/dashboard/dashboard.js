@@ -5,7 +5,13 @@ import axios from "axios";
 import { MapContainer, Polygon, TileLayer, Tooltip, useMapEvent } from "react-leaflet";
 import { gabesZerzisCoordinates, monastirGabesCoordinates, tabarkacapbonCoordinates, tunisMonastirCoordinates } from "../../utilities/coords";
 import globalConfig from '../../services/config';
-import '../../../node_modules/leaflet/dist/leaflet.css'
+import '../../../node_modules/leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import 'leaflet.heat';
+import { useMap } from 'react-leaflet';
+
+
+
 
 const GetPostion = ({ lngLat }) => {
     useMapEvent('click', (e) => {
@@ -16,6 +22,173 @@ const GetPostion = ({ lngLat }) => {
     return null
 }
 const Dashboard = () => {
+
+  const [supervisorPerformanceSeries, setSupervisorPerformanceSeries] = useState([]);
+  const [supervisorPerformanceOptions, setSupervisorPerformanceOptions] = useState({
+      chart: {
+          type: 'bar',
+          height: 350,
+      },
+      plotOptions: {
+          bar: {
+              horizontal: true,
+              endingShape: 'rounded',
+          },
+      },
+      dataLabels: {
+          enabled: false,
+      },
+      title: {
+          text: 'Patrols Performance Comparison'
+      },
+      xaxis: {
+          categories: [],
+      },
+      yaxis: {
+          title: {
+              text: 'Performance Score',
+          },
+      },
+      fill: {
+          opacity: 1,
+      },
+      tooltip: {
+          y: {
+              formatter: function (val) {
+                  return val;
+              },
+          },
+      },
+  });
+  
+  useEffect(() => {
+    axios.get(globalConfig.BACKEND_URL + "/api/patrols/performance").then((response) => {
+        const data = response.data;
+        const categories = data.map(item => item.supervisor.name);
+        const seriesData = data.map(item => item.performanceScore);
+        
+        setSupervisorPerformanceSeries([{
+            name: 'Performance Score',
+            data: seriesData
+        }]);
+        setSupervisorPerformanceOptions(prevOptions => ({
+            ...prevOptions,
+            xaxis: {
+                categories: categories
+            }
+        }));
+    });
+  }, []);
+  
+
+  const [incidentTrendsSeries, setIncidentTrendsSeries] = useState([]);
+  const [incidentTrendsOptions, setIncidentTrendsOptions] = useState({
+      chart: {
+          type: 'bar',
+          height: 350,
+      },
+      plotOptions: {
+          bar: {
+              horizontal: false,
+              endingShape: 'rounded',
+          },
+      },
+      dataLabels: {
+          enabled: false,
+      },
+      title: {
+          text: 'Incident Trends for August 2024'
+      },
+      xaxis: {
+          categories: [],
+      },
+      yaxis: {
+          title: {
+              text: 'Number of Incidents',
+          },
+      },
+      fill: {
+          opacity: 1,
+      },
+      tooltip: {
+          y: {
+              formatter: function (val) {
+                  return val;
+              },
+          },
+      },
+  });
+  useEffect(() => {
+    axios.get(globalConfig.BACKEND_URL + "/api/urgences/incident-trends").then((response) => {
+        const data = response.data;
+        const categories = data.map(item => item._id.type);
+        const seriesData = data.map(item => item.count);
+        
+        setIncidentTrendsSeries([{
+            name: 'Incident Count',
+            data: seriesData
+        }]);
+        setIncidentTrendsOptions(prevOptions => ({
+            ...prevOptions,
+            xaxis: {
+                categories: categories
+            }
+        }));
+    });
+}, []);
+
+    const [heatmapData, setHeatmapData] = useState([]);
+
+    useEffect(() => {
+      axios.get(globalConfig.BACKEND_URL + "/api/urgences/heatmap-data").then((response) => {
+        const data = response.data;
+    
+        const maxIntensity = Math.max(...data.map(item => item.intensity));
+        const normalizedData = data.map(item => [
+          item.lat, 
+          item.lng, 
+          item.intensity / maxIntensity 
+        ]);
+    
+        setHeatmapData(normalizedData);
+      });
+    }, []);
+    
+    const HeatmapLayer = ({ data }) => {
+      const map = useMap();
+    
+      useEffect(() => {
+        if (data.length) {
+          map.eachLayer(layer => {
+            if (layer instanceof L.HeatLayer) {
+              map.removeLayer(layer);
+            }
+          });
+    
+          const heat = L.heatLayer(data, {
+            radius: 20,
+            blur: 1,
+            maxZoom: 1,
+            gradient: {
+              0.0: 'blue',   // No emergencies (intensity = 0)
+              0.2: 'green',  // Low intensity
+              0.4: 'yellow', // Medium-low intensity
+              0.6: 'orange', // Medium-high intensity
+              0.8: 'red',    // High intensity
+              1.0: 'darkred' // Very high intensity (intensity = maxIntensity)
+            }
+          }).addTo(map);
+    
+          return () => {
+            map.removeLayer(heat);
+          };
+        }
+      }, [data, map]);
+    
+      return null;
+    };
+    
+  
     const [max,] = useState(5);
     const [region, setRegion] = useState(null);
     const [lngLat,] = useState([]);
@@ -249,6 +422,34 @@ const Dashboard = () => {
                 </Col>
             </Row>
             <Row>
+                  <Col>
+                      <Card>
+                          <Card.Body>
+                              <div id="chart">
+                                  <ReactApexChart options={incidentTrendsOptions} series={incidentTrendsSeries} type="bar" height={350} />
+                              </div>
+                          </Card.Body>
+                      </Card>
+                  </Col>
+            </Row>
+            <Row>
+              <Col>
+                  <Card>
+                      <Card.Body>
+                          <div id="chart">
+                              <ReactApexChart 
+                                  options={supervisorPerformanceOptions} 
+                                  series={supervisorPerformanceSeries} 
+                                  type="bar" 
+                                  height={350} 
+                              />
+                          </div>
+                      </Card.Body>
+                  </Card>
+              </Col>
+          </Row>
+
+            <Row>
                 <Col>
                     <Card>
                         <Card.Body>
@@ -285,6 +486,7 @@ const Dashboard = () => {
                                         Number of emergencies : {region.zarzis}
                                     </Tooltip>}
                                 </Polygon>
+                                <HeatmapLayer data={heatmapData} />
                                 <GetPostion lngLat={lngLat}></GetPostion>
                             </MapContainer>
                         </Card.Body>

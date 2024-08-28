@@ -108,7 +108,6 @@ const PatrolListShow = ({ selectedItem, onAssignMission, setShowPatrolList }) =>
                      <p>Status: {selectedPatrol.status}</p>
                      <p>Location: {selectedPatrol.location}</p>
                      <p>Team Members: {selectedPatrol.teamMembers.join(', ')}</p>
-                     <p>Assigned Missions: {selectedPatrol.assignedMissions.join(', ')}</p>
                   </div>
                ) : (
                   <p>No details available.</p>

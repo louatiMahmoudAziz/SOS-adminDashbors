@@ -32,4 +32,16 @@ router.post('/is-in-area', controller.isInRegion);
 // Add the route for updating an emergency
 router.put("/update/:id", controller.update);
 
+router.get('/incident-trends', controller.getIncidentTrends);
+
+router.get('/response-times', controller.getResponseTimes);
+
+router.get('/find-by-type', controller.findByType);
+
+
+
+
+router.get('/heatmap-data', controller.getHeatmapData);
+
+
 module.exports = router;

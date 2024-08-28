@@ -6770,6 +6770,11 @@ lazysizes@^5.3.2:
   resolved "https://registry.yarnpkg.com/lazysizes/-/lazysizes-5.3.2.tgz#27f974c26f5fcc33e7db765c0f4930488c8a2984"
   integrity sha512-22UzWP+Vedi/sMeOr8O7FWimRVtiNJV2HCa+V8+peZOw6QbswN9k58VUhd7i6iK5bw5QkYrF01LJbeJe0PV8jg==
 
+leaflet.heat@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/leaflet.heat/-/leaflet.heat-0.2.0.tgz#109d8cf586f0adee41f05aff031e27a77fecc229"
+  integrity sha512-Cd5PbAA/rX3X3XKxfDoUGi9qp78FyhWYurFg3nsfhntcM/MCNK08pRkf4iEenO1KNqwVPKCmkyktjW3UD+h9bQ==
+
 leaflet@^1.7.1:
   version "1.9.4"
   resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.9.4.tgz#23fae724e282fa25745aff82ca4d394748db7d8d"
